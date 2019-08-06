@@ -1,0 +1,28 @@
+Tree 0:
+ If (feature 0 <= -35.0)
+   If (feature 1 <= 176.0)
+     If (feature 2 <= -200.0)
+       Predict: 2.0
+     Else (feature 2 > -200.0)
+       If (feature 4 <= 325.0)
+         Predict: 5.0
+       Else (feature 4 > 325.0)
+         Predict: 1.0
+   Else (feature 1 > 176.0)
+     Predict: 0.0
+ Else (feature 0 > -35.0)
+   Predict: 2.0
+Tree 1:
+ If (feature 0 <= -35.0)
+   If (feature 1 <= 176.0)
+     If (feature 2 <= -200.0)
+       Predict: 2.0
+     Else (feature 2 > -200.0)
+       If (feature 4 <= 325.0)
+         Predict: 5.0
+       Else (feature 4 > 325.0)
+         Predict: 1.0
+   Else (feature 1 > 176.0)
+     Predict: 0.0
+ Else (feature 0 > -35.0)
+   Predict: 2.0

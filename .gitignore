@@ -1,0 +1,9 @@
+# eclipse
+.git
+.settings
+bin
+.classpath
+.project
+# intellij
+*.iml
+.idea
