@@ -31,14 +31,14 @@ public class TreeNode {
 	
 	public void print(boolean isLeftLeaf) {
 		if (isLeftLeaf) {
-			System.out.println("If feature " + feature + " <= " + value);
+			System.out.println("  If feature " + feature + " <= " + value);
 			if (predictLeft != 0) {
-				System.out.println("Predict " + predictLeft);
+				System.out.println("    Predict " + predictLeft);
 			}
 		} else {
-			System.out.println("Else feature " + feature + " > " + value);
+			System.out.println("  Else feature " + feature + " > " + value);
 			if (predictRight != 0) {
-				System.out.println("Predict " + predictRight);
+				System.out.println("    Predict " + predictRight);
 			}
 		}
 		

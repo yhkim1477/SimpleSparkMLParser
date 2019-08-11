@@ -6,37 +6,61 @@ import java.util.List;
 
 public class DecisionTree {
 	
-	private int IDX_CLASS;
-	private int IDX_FEATURE;
-	private int IDX_VALUE;
-	private int IDX_PREDICT;
+	private int IDX_CLASS = 0;
+	private int IDX_FEATURE = 2;
+	private int IDX_VALUE = 4;
+	private int IDX_PREDICT = 1;
 	private TreeNode root = null;
+	private int cntPredict = 0;
+	private int cntDecision = 0;
 	
 	public DecisionTree() {
-		IDX_CLASS = 0;
-		IDX_FEATURE = 2;
-		IDX_VALUE = 4;
-		IDX_PREDICT = 1;
 	}
 	
-	public void Initialize(String raw) throws IOException {
-		List<String[]> parsedRawModel = parseRawModel(raw);
+	public void initialize(String raw) throws IOException {
+		List<String[]> model = parseRawModel(raw);
+		if (model == null) return;
 		
 		boolean isLeftLeaf = true;
-		for (String[] line : parsedRawModel) {
+		for (String[] line : model) {
 			if (line[IDX_CLASS].equals("If")) {
 				int feature = Integer.parseInt(line[IDX_FEATURE]);
 				double value = Double.parseDouble(line[IDX_VALUE]);
 				insertFeature(isLeftLeaf, feature, value);
 				isLeftLeaf = true;
+				cntDecision++;
 			} else if (line[IDX_CLASS].equals("Else")) {
-				root = root.nodeRoot;
+				if (!isLeftLeaf) moveToEmptyRoot();
 				isLeftLeaf = false;
-			} else { // Predict
+				cntDecision++;
+			} else if (line[IDX_CLASS].equals("Predict")) {
 				double predict = Double.parseDouble(line[IDX_PREDICT]);
 				insertPredict(isLeftLeaf, predict);
+				cntPredict++;
+			} else {
+				return;
 			}
 		}
+	}
+	
+	public void print() {
+		moveToRoot();
+		printAll(root);
+	}
+	
+	private void printAll(TreeNode node) {
+		node.print(true);
+		if (node.nodeLeft != null) printAll(node.nodeLeft);
+		node.print(false);
+		if (node.nodeRight != null) printAll(node.nodeRight);
+	}
+	
+	public int getFeatures() {
+		return cntDecision;
+	}
+	
+	public int getPredicts() {
+		return cntPredict;
 	}
 	
 	private void insertFeature(boolean isLeftLeaf, int feature, double value) {
@@ -60,14 +84,39 @@ public class DecisionTree {
 		else root.predictRight = predict;
 	}
 	
-	public List<String[]> parseRawModel(String raw) {
+	private void moveToRoot() {
+		while (root != null && root.nodeRoot != null) root = root.nodeRoot;
+	}
+	
+	private void moveToEmptyRoot() {
+		do {
+			root = root.nodeRoot;
+		} while (root != null && root.nodeRight != null);
+	}
+	
+	public double predict(double[] vector) {
+		moveToRoot();
+		
+		while (root != null && root.nodeLeft != null && root.nodeRight != null) {
+			if (vector[root.feature] <= root.value) root = root.nodeLeft;
+			else root = root.nodeRight;
+		}
+		
+		if (vector[root.feature] <= root.value) return root.predictLeft;
+		else return root.predictRight;
+	}
+	
+	private List<String[]> parseRawModel(String raw) {
 		String clean = raw.replaceAll("[():]", "").trim();
-		if (clean.isEmpty()) return null;
+		if (clean.isEmpty()) {
+			System.out.println("Raw return");
+			return null;
+		}
 		
 		String[] lines = clean.split("\n");
 		List<String[]> arModel = new ArrayList<>(lines.length);
 		for (String line : lines) {
-			String[] split = line.split(" ");
+			String[] split = line.trim().split(" ");
 			if (split.length >= 2) arModel.add(split);
 		}
 		
