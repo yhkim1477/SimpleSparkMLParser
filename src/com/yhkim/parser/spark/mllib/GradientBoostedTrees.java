@@ -12,8 +12,14 @@ public class GradientBoostedTrees {
 	public static int ALGO_SUM = 0;
 	public static int ALGO_VOTE = 1;
 	private List<DecisionTree> trees;
+	private double[] treeWeights;
 	
 	public GradientBoostedTrees(String raw) throws IOException {
+		this(raw, null);
+	}
+	
+	public GradientBoostedTrees(String raw, double[] treeWeights) throws IOException {
+		this.treeWeights = treeWeights;
 		trees = new ArrayList<>();
 		
 		String[] modelsRaw = raw.split("(Tree [0-9]{1,2}.*:)");
@@ -23,6 +29,12 @@ public class GradientBoostedTrees {
 			DecisionTree tree = new DecisionTree();
 			tree.initialize(model);
 			if (tree.getFeatures() > 0 && tree.getPredicts() > 0) trees.add(tree);
+		}
+		
+		if (this.treeWeights == null) {
+			this.treeWeights = new double[trees.size()];
+			this.treeWeights[0] = 1D;
+			for (int i = 1; i < trees.size(); i++) this.treeWeights[i] = 0.1D;
 		}
 	}
 	
@@ -42,7 +54,7 @@ public class GradientBoostedTrees {
 		}
 		
 		if (algo == ALGO_SUM) {
-			return BLAS.dot(new DenseVector(vector), new DenseVector(predictVec));
+			return BLAS.dot(new DenseVector(predictVec), new DenseVector(treeWeights));
 		} else {
 			return vote(predictVec);
 		}
