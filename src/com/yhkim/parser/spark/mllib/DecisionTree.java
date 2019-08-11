@@ -8,7 +8,7 @@ public class DecisionTree {
 	
 	private int IDX_CLASS = 0;
 	private int IDX_FEATURE = 2;
-	private int IDX_VALUE = 4;
+	private int IDX_THRESHOLD = 4;
 	private int IDX_PREDICT = 1;
 	private TreeNode root = null;
 	private int cntPredict = 0;
@@ -25,8 +25,8 @@ public class DecisionTree {
 		for (String[] line : model) {
 			if (line[IDX_CLASS].equals("If")) {
 				int feature = Integer.parseInt(line[IDX_FEATURE]);
-				double value = Double.parseDouble(line[IDX_VALUE]);
-				insertFeature(isLeftLeaf, feature, value);
+				double threshold = Double.parseDouble(line[IDX_THRESHOLD]);
+				insertFeature(isLeftLeaf, feature, threshold);
 				isLeftLeaf = true;
 				cntDecision++;
 			} else if (line[IDX_CLASS].equals("Else")) {
@@ -63,18 +63,18 @@ public class DecisionTree {
 		return cntPredict;
 	}
 	
-	private void insertFeature(boolean isLeftLeaf, int feature, double value) {
-		root = insertNode(isLeftLeaf, feature, value);
+	private void insertFeature(boolean isLeftLeaf, int feature, double threshold) {
+		root = insertNode(isLeftLeaf, feature, threshold);
 	}
 	
-	private TreeNode insertNode(boolean isLeftLeaf, int feature, double value) {
+	private TreeNode insertNode(boolean isLeftLeaf, int feature, double threshold) {
 		if (root == null) {
-			return new TreeNode(null, feature, value);
+			return new TreeNode(null, feature, threshold);
 		} else if (isLeftLeaf) {
-			root.nodeLeft = new TreeNode(root, feature, value);
+			root.nodeLeft = new TreeNode(root, feature, threshold);
 			return root.nodeLeft;
 		} else {
-			root.nodeRight = new TreeNode(root, feature, value);
+			root.nodeRight = new TreeNode(root, feature, threshold);
 			return root.nodeRight;
 		}
 	}
@@ -98,11 +98,11 @@ public class DecisionTree {
 		moveToRoot();
 		
 		while (root != null && root.nodeLeft != null && root.nodeRight != null) {
-			if (vector[root.feature] <= root.value) root = root.nodeLeft;
+			if (vector[root.feature] <= root.threshold) root = root.nodeLeft;
 			else root = root.nodeRight;
 		}
 		
-		if (vector[root.feature] <= root.value) return root.predictLeft;
+		if (vector[root.feature] <= root.threshold) return root.predictLeft;
 		else return root.predictRight;
 	}
 	
