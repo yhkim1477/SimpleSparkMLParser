@@ -1,3 +1,4 @@
+GradientBoostedTreesModel classifier of depth 2 with 8 nodes
 Tree 0:
  If (feature 0 <= -35.0)
    If (feature 1 <= 176.0)
